@@ -11,15 +11,14 @@ import java.util.Set;
 
 public class Tela extends JPanel {
 
-    private final Set<Personagem> Personagem;
+    private final Set<Personagem> personagens;
 
     public Tela() {
 
         // TODO preciso ser melhorado
 
         this.setBackground(Color.white);
-        this.aldeoes = new HashSet<>();
-
+        this.personagens = new HashSet<>();
     }
 
     /**
