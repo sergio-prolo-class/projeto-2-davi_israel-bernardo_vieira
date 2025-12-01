@@ -1,6 +1,7 @@
 package ifsc.joe.ui;
 
 import ifsc.joe.domain.impl.Aldeao;
+import ifsc.joe.domain.impl.Personagem;
 import ifsc.joe.enums.Direcao;
 
 import javax.swing.*;
@@ -10,25 +11,27 @@ import java.util.Set;
 
 public class Tela extends JPanel {
 
-    private final Set<Aldeao> aldeoes;
+    private final Set<Personagem> Personagem;
 
     public Tela() {
 
-        //TODO preciso ser melhorado
+        // TODO preciso ser melhorado
 
         this.setBackground(Color.white);
         this.aldeoes = new HashSet<>();
+
     }
 
     /**
      * Method que invocado sempre que o JPanel precisa ser resenhado.
+     * 
      * @param g Graphics componente de java.awt
      */
     @Override
     public void paint(Graphics g) {
         super.paint(g);
 
-        //TODO preciso ser melhorado
+        // TODO preciso ser melhorado
 
         // percorrendo a lista de aldeões e pedindo para cada um se desenhar na tela
         this.aldeoes.forEach(aldeao -> aldeao.desenhar(g, this));
@@ -56,7 +59,7 @@ public class Tela extends JPanel {
      * @param direcao direcao para movimentar
      */
     public void movimentarAldeoes(Direcao direcao) {
-        //TODO preciso ser melhorado
+        // TODO preciso ser melhorado
 
         this.aldeoes.forEach(aldeao -> aldeao.mover(direcao, this.getWidth(), this.getHeight()));
 
@@ -69,7 +72,7 @@ public class Tela extends JPanel {
      */
     public void atacarAldeoes() {
 
-        //TODO preciso ser melhorado
+        // TODO preciso ser melhorado
 
         // Percorrendo a lista de aldeões e pedindo para todos atacarem
         this.aldeoes.forEach(Aldeao::atacar);
