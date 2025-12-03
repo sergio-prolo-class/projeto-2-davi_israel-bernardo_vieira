@@ -1,20 +1,19 @@
 package ifsc.joe.ui;
 
+import ifsc.joe.domain.impl.Aldeao;
+import ifsc.joe.domain.impl.Arqueiro;
+import ifsc.joe.domain.impl.Cavaleiro; // quando criarmos
 import ifsc.joe.enums.Direcao;
 
 import javax.swing.*;
 import java.util.Random;
 
-/**
- * Classe responsável por gerenciar os controles e interações da interface.
- * Conecta os componentes visuais com a lógica do jogo (Tela).
- */
 public class PainelControles {
 
     private final Random sorteio;
     private Tela tela;
 
-    // Componentes da interface (gerados pelo Form Designer)
+    // Componentes da interface
     private JPanel painelPrincipal;
     private JPanel painelTela;
     private JPanel painelLateral;
@@ -37,75 +36,88 @@ public class PainelControles {
         configurarListeners();
     }
 
-    /**
-     * Configura todos os listeners dos botões.
-     */
+    // ------------------------- CONFIGURA LISTENERS -------------------------
+
     private void configurarListeners() {
         configurarBotoesMovimento();
         configurarBotoesCriacao();
         configurarBotaoAtaque();
     }
 
-    /**
-     * Configura todos os listeners dos botões de movimento
-     */
+    // ------------------------ MOVIMENTAÇÃO -------------------------
+
     private void configurarBotoesMovimento() {
-        buttonCima.addActionListener(e -> getTela().movimentarAldeoes(Direcao.CIMA));
-        buttonBaixo.addActionListener(e -> getTela().movimentarAldeoes(Direcao.BAIXO));
-        buttonEsquerda.addActionListener(e -> getTela().movimentarAldeoes(Direcao.ESQUERDA));
-        buttonDireita.addActionListener(e -> getTela().movimentarAldeoes(Direcao.DIREITA));
+        buttonCima.addActionListener(e -> moverFiltrado(Direcao.CIMA));
+        buttonBaixo.addActionListener(e -> moverFiltrado(Direcao.BAIXO));
+        buttonEsquerda.addActionListener(e -> moverFiltrado(Direcao.ESQUERDA));
+        buttonDireita.addActionListener(e -> moverFiltrado(Direcao.DIREITA));
     }
 
-    /**
-     * Configura todos os listeners dos botões de criação
-     */
+    private void moverFiltrado(Direcao direcao) {
+        Class<?> tipo = getTipoSelecionado();
+
+        if (tipo == null) {
+            getTela().moverTodosPersonagens(direcao);
+        } else {
+            getTela().moverPersonagem(tipo, direcao);
+        }
+    }
+
+    // ------------------------ ATAQUE -------------------------
+
+    private void configurarBotaoAtaque() {
+        atacarButton.addActionListener(e -> atacarFiltrado());
+    }
+
+    private void atacarFiltrado() {
+        Class<?> tipo = getTipoSelecionado();
+
+        if (tipo == null) {
+            getTela().atacarTodos();
+        } else {
+            getTela().atacarPersonagem(tipo);
+        }
+    }
+
+    // ------------------------ CRIAÇÃO DE PERSONAGENS -------------------------
+
     private void configurarBotoesCriacao() {
-        bCriaAldeao.addActionListener(e -> criarAldeaoAleatorio());
+
+        bCriaAldeao.addActionListener(e -> {
+            int[] pos = gerarPosicaoAleatoria();
+            getTela().adicionarPersonagem(new Aldeao(pos[0], pos[1]));
+        });
 
         bCriaArqueiro.addActionListener(e -> {
-            //TODO: Implementar criação de arqueiro
-            mostrarMensagemNaoImplementado("Criar Arqueiro");
+            int[] pos = gerarPosicaoAleatoria();
+            getTela().adicionarPersonagem(new Arqueiro(pos[0], pos[1]));
         });
 
         bCriaCavaleiro.addActionListener(e -> {
-            //TODO: Implementar criação de cavaleiro
-            mostrarMensagemNaoImplementado("Criar Cavaleiro");
+            int[] pos = gerarPosicaoAleatoria();
+            getTela().adicionarPersonagem(new Cavaleiro(pos[0], pos[1]));
         });
     }
 
-    /**
-     * Configura o listener do botão de ataque
-     */
-    private void configurarBotaoAtaque() {
-        atacarButton.addActionListener(e -> getTela().atacarAldeoes());
-    }
-
-    /**
-     * Cria um aldeão em posição aleatória na tela.
-     */
-    private void criarAldeaoAleatorio() {
+    private int[] gerarPosicaoAleatoria() {
         final int PADDING = 50;
         int posX = sorteio.nextInt(painelTela.getWidth() - PADDING);
         int posY = sorteio.nextInt(painelTela.getHeight() - PADDING);
-
-        getTela().criarAldeao(posX, posY);
+        return new int[] { posX, posY };
     }
 
-    /**
-     * Exibe mensagem informando que a funcionalidade ainda não foi implementada.
-     */
-    private void mostrarMensagemNaoImplementado(String funcionalidade) {
-        JOptionPane.showMessageDialog(
-                painelPrincipal,
-                "Preciso ser implementado",
-                funcionalidade,
-                JOptionPane.INFORMATION_MESSAGE
-        );
+    // ------------------------ UTILITÁRIOS -------------------------
+
+    private Class<?> getTipoSelecionado() {
+        if (aldeaoRadioButton.isSelected())
+            return Aldeao.class;
+        if (arqueiroRadioButton.isSelected())
+            return Arqueiro.class;
+        if (cavaleiroRadioButton.isSelected())
+            return Cavaleiro.class;
+        return null;
     }
 
-    /**
-     * Obtém a referência da Tela com cast seguro.
-     */
     private Tela getTela() {
         if (tela == null) {
             tela = (Tela) painelTela;
@@ -113,17 +125,10 @@ public class PainelControles {
         return tela;
     }
 
-    /**
-     * Retorna o painel principal para ser adicionado ao JFrame.
-     */
     public JPanel getPainelPrincipal() {
         return painelPrincipal;
     }
 
-    /**
-     * Método chamado pelo Form Designer para criar componentes customizados.
-     * Este método é invocado antes do construtor.
-     */
     private void createUIComponents() {
         this.painelTela = new Tela();
     }

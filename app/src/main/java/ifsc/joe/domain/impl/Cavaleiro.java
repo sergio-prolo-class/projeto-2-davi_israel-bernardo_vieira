@@ -8,16 +8,12 @@ import java.util.Objects;
 public class Cavaleiro extends Personagem {
   public static final String NOME_IMAGEM = "Cavaleiro";
 
-  public Cavaleiro(int x, int y, boolean atacando, Image icone) {
-    super(x, y, atacando, icone);
+  public Cavaleiro(int x, int y) {
+    super(x, y, false, null);
   }
 
-  /**
-   * Desenhando o Cavaleiro, nas coordenadas X e Y, com a imagem 'icone'
-   * no JPanel 'pai'
-   *
-   * @param g objeto do JPanel que será usado para desenhar o Aldeão
-   */
+  // Desenha o Cavaleiro
+  @Override
   public void desenhar(Graphics g, JPanel painel) {
     // verificando qual imagem carregar
     this.icone = this.carregarImagem(NOME_IMAGEM + (atacando ? "2" : ""));
@@ -25,6 +21,7 @@ public class Cavaleiro extends Personagem {
     g.drawImage(this.icone, this.posX, this.posY, painel);
   }
 
+  // Método para atacar
   @Override
   public void atacar() {
     this.atacando = !this.atacando;
@@ -40,4 +37,5 @@ public class Cavaleiro extends Personagem {
     return new ImageIcon(Objects.requireNonNull(
         getClass().getClassLoader().getResource("./" + imagem + ".png"))).getImage();
   }
+
 }

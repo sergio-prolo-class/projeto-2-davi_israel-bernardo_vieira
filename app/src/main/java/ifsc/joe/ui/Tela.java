@@ -21,62 +21,52 @@ public class Tela extends JPanel {
         this.personagens = new HashSet<>();
     }
 
-    /**
-     * Method que invocado sempre que o JPanel precisa ser resenhado.
-     * 
-     * @param g Graphics componente de java.awt
-     */
+    // Invoca sempre que precisa redesenhar o tabuleiro
     @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         // TODO preciso ser melhorado
 
-        // percorrendo a lista de aldeões e pedindo para cada um se desenhar na tela
-        this.aldeoes.forEach(aldeao -> aldeao.desenhar(g, this));
+        // percorrendo a lista de personagens e pedindo para cada um se desenhar na tela
+        this.personagens.forEach(p -> p.desenhar(g, this));
 
         // liberando o contexto gráfico
         g.dispose();
     }
 
-    /**
-     * Cria um aldeao nas coordenadas X e Y, desenha-o neste JPanel
-     * e adiciona o mesmo na lista de aldeoes
-     *
-     * @param x coordenada X
-     * @param y coordenada Y
-     */
-    public void criarAldeao(int x, int y) {
-        Aldeao a = new Aldeao(x, y);
-        a.desenhar(super.getGraphics(), this);
-        this.aldeoes.add(a);
-    }
-
-    /**
-     * Atualiza as coordenadas X ou Y de todos os aldeoes
-     *
-     * @param direcao direcao para movimentar
-     */
-    public void movimentarAldeoes(Direcao direcao) {
-        // TODO preciso ser melhorado
-
-        this.aldeoes.forEach(aldeao -> aldeao.mover(direcao, this.getWidth(), this.getHeight()));
-
-        // Depois que as coordenadas foram atualizadas é necessário repintar o JPanel
+    // Cria um Personagem
+    public void adicionarPersonagem(Personagem p) {
+        this.personagens.add(p);
         this.repaint();
     }
 
-    /**
-     * Altera o estado do aldeão de atacando para não atacando e vice-versa
-     */
-    public void atacarAldeoes() {
-
+    // Move TODOS os personagens
+    public void moverTodosPersonagens(Direcao direcao) {
         // TODO preciso ser melhorado
-
-        // Percorrendo a lista de aldeões e pedindo para todos atacarem
-        this.aldeoes.forEach(Aldeao::atacar);
-
-        // Fazendo o JPanel ser redesenhado
+        this.personagens.forEach(p -> p.mover(direcao, getWidth(), getHeight()));
         this.repaint();
+    }
+
+    // Ativa o estado de ataque para TODOS os personagens
+    public void atacarTodos() {
+        // TODO preciso ser melhorado
+        this.personagens.forEach(Personagem::atacar);
+        this.repaint();
+    }
+
+    // Move um TIPO de personagem
+    public void moverPersonagem(Class<?> tipo, Direcao direcao) {
+        personagens.stream()
+                .filter(p -> tipo.isInstance(p))
+                .forEach(p -> p.mover(direcao, getWidth(), getHeight()));
+        repaint();
+    }
+
+    // Ataca somente um TIPO de personagem
+    public void atacarPersonagem(Class<?> tipo) {
+        personagens.stream()
+                .filter(p -> tipo.isInstance(p))
+                .forEach(Personagem::atacar);
+        repaint();
     }
 }

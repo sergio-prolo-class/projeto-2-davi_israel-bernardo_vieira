@@ -1,25 +1,19 @@
 package ifsc.joe.domain.impl;
 
 import ifsc.joe.enums.Direcao;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
 public class Aldeao extends Personagem {
-
     public static final String NOME_IMAGEM = "aldeao";
 
-    public Aldeao(int x, int y, boolean atacando, Image icone) {
-        super(x, y, atacando, icone);
+    public Aldeao(int x, int y) {
+        super(x, y, false, null);
     }
 
-    /**
-     * Desenhando o Aldeão, nas coordenadas X e Y, com a imagem 'icone'
-     * no JPanel 'pai'
-     *
-     * @param g objeto do JPanel que será usado para desenhar o Aldeão
-     */
+    // Desenha o Aldeão
+    @Override
     public void desenhar(Graphics g, JPanel painel) {
         // verificando qual imagem carregar
         this.icone = this.carregarImagem(NOME_IMAGEM + (atacando ? "2" : ""));
@@ -27,6 +21,7 @@ public class Aldeao extends Personagem {
         g.drawImage(this.icone, this.posX, this.posY, painel);
     }
 
+    // Método para atacar
     @Override
     public void atacar() {
         this.atacando = !this.atacando;
