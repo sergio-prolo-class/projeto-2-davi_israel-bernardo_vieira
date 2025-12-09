@@ -20,13 +20,6 @@ public class Aldeao extends Personagem {
         // desenhando de fato a imagem no pai
         g.drawImage(this.icone, this.posX, this.posY, painel);
     }
-
-    // Método para atacar
-    @Override
-    public void atacar() {
-        this.atacando = !this.atacando;
-    }
-
     /**
      * Metodo auxiliar para carregar uma imagem do disco
      *

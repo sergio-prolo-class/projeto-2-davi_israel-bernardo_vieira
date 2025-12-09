@@ -1,8 +1,11 @@
 package ifsc.joe.ui;
 
+import ifsc.joe.Interfaces.ComMontaria;
+import ifsc.joe.Interfaces.Guerreiro;
 import ifsc.joe.domain.impl.Aldeao;
 import ifsc.joe.domain.impl.Arqueiro;
 import ifsc.joe.domain.impl.Cavaleiro; // quando criarmos
+import ifsc.joe.domain.impl.Personagem;
 import ifsc.joe.enums.Direcao;
 
 import javax.swing.*;
@@ -20,6 +23,7 @@ public class PainelControles {
     private JButton bCriaAldeao;
     private JButton bCriaArqueiro;
     private JButton bCriaCavaleiro;
+    private JButton bMontar;
     private JRadioButton todosRadioButton;
     private JRadioButton aldeaoRadioButton;
     private JRadioButton arqueiroRadioButton;
@@ -33,7 +37,6 @@ public class PainelControles {
 
     public PainelControles() {
         this.sorteio = new Random();
-        configurarListeners();
     }
 
     // ------------------------- CONFIGURA LISTENERS -------------------------
@@ -42,6 +45,7 @@ public class PainelControles {
         configurarBotoesMovimento();
         configurarBotoesCriacao();
         configurarBotaoAtaque();
+        configurarBotaoMontaria();
     }
 
     // ------------------------ MOVIMENTAÇÃO -------------------------
@@ -63,19 +67,45 @@ public class PainelControles {
         }
     }
 
+    // ------------------------ MONTARIA -------------------------
+
+    private void configurarBotaoMontaria() {
+        bMontar.addActionListener(e -> alternarMontaria());
+    }
+
+    private void alternarMontaria() {
+        Personagem p = getPersonagemSelecionado();
+        if (p instanceof ComMontaria montaria) {
+            montaria.alternarMontado();
+            tela.repaint();
+        } else {
+            System.out.println("Este personagem não possui montaria.");
+        }
+    }
+
     // ------------------------ ATAQUE -------------------------
 
     private void configurarBotaoAtaque() {
         atacarButton.addActionListener(e -> atacarFiltrado());
     }
 
-    private void atacarFiltrado() {
-        Class<?> tipo = getTipoSelecionado();
+    private Personagem getPersonagemSelecionado() {
+        // Apenas obtém o objeto que a Tela está rastreando
+        return getTela().getPersonagemAtivo();
+    }
 
-        if (tipo == null) {
-            getTela().atacarTodos();
+    private void atacarFiltrado() {
+        Personagem personagem = getPersonagemSelecionado();
+
+        // É importante verificar se 'personagem' é null (se nada estiver selecionado)
+        if (personagem instanceof Guerreiro) {
+
+            // Polimorfismo: chama o atacar() correto para Arqueiro ou Cavaleiro
+            ((Guerreiro) personagem).atacar();
+
         } else {
-            getTela().atacarPersonagem(tipo);
+            // Feedback para o usuário: nada selecionado ou o alvo (ex: Aldeao) não pode atacar
+            System.out.println("Ação inválida: Nenhum atacante válido selecionado.");
         }
     }
 
@@ -131,5 +161,6 @@ public class PainelControles {
 
     private void createUIComponents() {
         this.painelTela = new Tela();
+        configurarListeners();
     }
 }

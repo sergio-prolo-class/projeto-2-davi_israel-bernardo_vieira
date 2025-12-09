@@ -1,11 +1,12 @@
 package ifsc.joe.domain.impl;
 
+import ifsc.joe.Interfaces.Guerreiro;
 import ifsc.joe.enums.Direcao;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
-public class Arqueiro extends Personagem {
+public class Arqueiro extends Personagem implements Guerreiro {
     public static final String NOME_IMAGEM = "Arqueiro";
 
     public Arqueiro(int x, int y) {

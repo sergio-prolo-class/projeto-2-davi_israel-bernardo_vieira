@@ -19,12 +19,28 @@ public abstract class Personagem {
 
   public abstract void desenhar(Graphics g, JPanel painel);
 
-  /**
+  //Método para detectar que o personagem foi clicado e vai atacar:
+  public boolean foiClicado(int mouseX, int mouseY) {
+      int largura = 50;
+      int altura  = 50;
+
+      // Se o ícone existe, usa o tamanho real
+      if (icone != null) {
+          largura = icone.getWidth(null);
+          altura  = icone.getHeight(null);
+      }
+
+      return mouseX >= posX && mouseX <= posX + largura &&
+              mouseY >= posY && mouseY <= posY + altura;
+  }
+
+
+    /**
    * Atualiza as coordenadas X e Y do personagem
    *
    * @param direcao indica a direcao a ir.
    */
-  public final void mover(Direcao direcao, int maxLargura, int maxAltura) {
+  public void mover(Direcao direcao, int maxLargura, int maxAltura) {
     switch (direcao) {
       case CIMA -> this.posY -= 10;
       case BAIXO -> this.posY += 10;
@@ -42,9 +58,4 @@ public abstract class Personagem {
     this.posX = Math.min(Math.max(0, this.posX), maxLargura - this.icone.getWidth(null));
     this.posY = Math.min(Math.max(0, this.posY), maxAltura - this.icone.getHeight(null));
   }
-
-  public void atacar() {
-    this.atacando = !this.atacando;
-  }
-
 }
