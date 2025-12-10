@@ -9,15 +9,46 @@ public abstract class Personagem {
   protected int posX, posY;
   protected boolean atacando;
   protected Image icone;
+  protected int vida; // Novo
+  protected int ataque; // Novo
+  protected int defesa; // Novo
 
-  public Personagem(int x, int y, boolean atacando, Image icone) {
+  public Personagem(int x, int y, boolean atacando, Image icone, int vida, int ataque, int defesa) {
     this.posX = x;
     this.posY = y;
     this.atacando = atacando;
     this.icone = icone;
+    this.vida = vida;
+    this.ataque = ataque;
+    this.defesa = defesa;
   }
 
   public abstract void desenhar(Graphics g, JPanel painel);
+
+  public void sofrerDano(int dano) {
+      int danoReal = Math.max(0, dano - this.defesa);
+      this.vida -= danoReal;
+      if (this.vida < 0) {
+          this.vida = 0;
+      }
+      System.out.println(this.getClass().getSimpleName() + " sofreu " + danoReal + " de dano. Vida restante: " + this.vida);
+  }
+
+  public boolean estaVivo() {
+      return this.vida > 0;
+  }
+
+  public int getAtaque() {
+      return ataque;
+  }
+
+  public int getPosX() {
+      return posX;
+  }
+
+  public int getPosY() {
+      return posY;
+  }
 
   //Método para detectar que o personagem foi clicado e vai atacar:
   public boolean foiClicado(int mouseX, int mouseY) {

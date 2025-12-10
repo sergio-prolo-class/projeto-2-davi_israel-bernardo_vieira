@@ -9,7 +9,8 @@ public class Aldeao extends Personagem {
     public static final String NOME_IMAGEM = "aldeao";
 
     public Aldeao(int x, int y) {
-        super(x, y, false, null);
+        // vida, ataque, defesa
+        super(x, y, false, null, 100, 0, 5);
     }
 
     // Desenha o Aldeão

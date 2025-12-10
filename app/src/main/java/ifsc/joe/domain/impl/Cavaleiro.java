@@ -3,43 +3,49 @@ package ifsc.joe.domain.impl;
 import ifsc.joe.Interfaces.ComMontaria;
 import ifsc.joe.Interfaces.Guerreiro;
 import ifsc.joe.enums.Direcao;
+
+import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
 public class Cavaleiro extends Personagem implements Guerreiro, ComMontaria {
-  public static final String NOME_IMAGEM = "Cavaleiro";
-  private boolean montado = true;
 
-  public Cavaleiro(int x, int y) {
-    super(x, y, false, null);
-  }
+    public static final String IMG_MONTADO = "Cavaleiro";
+    public static final String IMG_DESMONTADO = "CavaleiroDesmontado";
 
-  // Desenha o Cavaleiro
-  @Override
-  public void desenhar(Graphics g, JPanel painel) {
-    // verificando qual imagem carregar
-    this.icone = this.carregarImagem(NOME_IMAGEM + (atacando ? "2" : ""));
-    // desenhando de fato a imagem no pai
-    g.drawImage(this.icone, this.posX, this.posY, painel);
-  }
+    private boolean montado = true;
 
-  //Montado no cavalo:
+    public Cavaleiro(int x, int y) {
+        super(x, y, false, null, 120, 30, 10);
+    }
+
     @Override
-    public void alternarMontado(){
-      montado = !montado;
+    public void desenhar(Graphics g, JPanel painel) {
+
+        String nomeImagemBase = montado ? IMG_MONTADO : IMG_DESMONTADO;
+
+        // Se estiver atacando, carrega a versão 2
+        String nomeImagemFinal = nomeImagemBase + (atacando ? "2" : "");
+
+        this.icone = carregarImagem(nomeImagemFinal);
+
+        g.drawImage(this.icone, this.posX, this.posY, painel);
+    }
+
+    @Override
+    public void alternarMontado() {
+        montado = !montado;
     }
 
     @Override
     public boolean isMontado() {
-      return montado;
+        return montado;
     }
-
-    //Movendo com a montaria:
 
     @Override
     public void mover(Direcao dir, int w, int h) {
-        int velocidade = montado ? 20 : 10;  // mais rápido montado
+        int velocidade = montado ? 20 : 10;
 
         switch (dir) {
             case CIMA    -> posY -= velocidade;
@@ -48,26 +54,41 @@ public class Cavaleiro extends Personagem implements Guerreiro, ComMontaria {
             case DIREITA -> posX += velocidade;
         }
 
-        // mantém dentro dos limites
         posX = Math.max(0, Math.min(w - 50, posX));
         posY = Math.max(0, Math.min(h - 50, posY));
     }
 
+    @Override
+    public void atacar() {
+        this.atacando = !this.atacando;
+    }
 
-  // Método para atacar
-  @Override
-  public void atacar() {
-    this.atacando = !this.atacando;
-  }
+    @Override
+    public void atacarTodosProximos(List<Personagem> alvos) {
+        final int RAIO_ATAQUE = 50;
+        this.atacando = true;
 
-  /**
-   * Metodo auxiliar para carregar uma imagem do disco
-   *
-   * @param imagem Caminho da imagem
-   * @return Retorna um objeto Image
-   */
-  private Image carregarImagem(String imagem) {
-    return new ImageIcon(Objects.requireNonNull(
-        getClass().getClassLoader().getResource("./" + imagem + ".png"))).getImage();
-  }
+        alvos.stream()
+                .filter(alvo -> alvo != this)
+                .filter(alvo -> calcularDistancia(alvo) <= RAIO_ATAQUE)
+                .forEach(alvo -> alvo.sofrerDano(this.getAtaque()));
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+                this.atacando = false;
+            } catch (Exception ignored) {}
+        }).start();
+    }
+
+    private double calcularDistancia(Personagem outro) {
+        return Math.sqrt(Math.pow(this.posX - outro.getPosX(), 2) +
+                Math.pow(this.posY - outro.getPosY(), 2));
+    }
+
+    private Image carregarImagem(String nome) {
+        return new ImageIcon(Objects.requireNonNull(
+                getClass().getClassLoader().getResource("./" + nome + ".png")
+        )).getImage();
+    }
 }
