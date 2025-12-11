@@ -4,7 +4,6 @@ O QUE PRECISA SER IMPLEMENTADO:
 __________________________________________________________________________________________
 
 OBRIGATÓRIO:
-Coletador precisa ser implementado;
 Corrigir fundo dos PNGs ( TODOS )
 
 __________________________________________________________________________________________
