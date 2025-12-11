@@ -37,6 +37,10 @@ public class PainelControles {
 
     public PainelControles() {
         this.sorteio = new Random();
+        // A chamada para configurarListeners() foi movida para cá
+        // para garantir que os componentes da UI (botões) já tenham sido inicializados
+        // pelo código gerado pelo GUI Designer.
+        SwingUtilities.invokeLater(this::configurarListeners);
     }
 
     // ------------------------- CONFIGURA LISTENERS -------------------------
@@ -46,6 +50,7 @@ public class PainelControles {
         configurarBotoesCriacao();
         configurarBotaoAtaque();
         configurarBotaoMontaria();
+        configurarControlesTeclado();
     }
 
     // ------------------------ MOVIMENTAÇÃO -------------------------
@@ -73,13 +78,51 @@ public class PainelControles {
         bMontar.addActionListener(e -> alternarMontaria());
     }
 
-    private void alternarMontaria() {
-        Personagem p = getPersonagemSelecionado();
-        if (p instanceof ComMontaria montaria) {
-            montaria.alternarMontado();
-            tela.repaint();
+    // ------------------------ CONTROLES POR TECLADO -------------------------
+
+    private void configurarControlesTeclado() {
+        // A Tela já tem KeyBindings para movimento, ataque e montaria.
+        // Aqui vamos adicionar a criação de personagens e a troca de filtro.
+
+        // Criação de Personagens (1, 2, 3)
+        getTela().bind("1", "criaAldeao", () -> {
+            int[] pos = gerarPosicaoAleatoria();
+            getTela().adicionarPersonagem(new Aldeao(pos[0], pos[1]));
+        });
+
+        getTela().bind("2", "criaArqueiro", () -> {
+            int[] pos = gerarPosicaoAleatoria();
+            getTela().adicionarPersonagem(new Arqueiro(pos[0], pos[1]));
+        });
+
+        getTela().bind("3", "criaCavaleiro", () -> {
+            int[] pos = gerarPosicaoAleatoria();
+            getTela().adicionarPersonagem(new Cavaleiro(pos[0], pos[1]));
+        });
+
+        // Troca de Filtro (Tab)
+        getTela().bind("TAB", "trocaFiltro", this::alternarFiltro);
+    }
+
+    private void alternarFiltro() {
+        if (todosRadioButton.isSelected()) {
+            aldeaoRadioButton.setSelected(true);
+        } else if (aldeaoRadioButton.isSelected()) {
+            arqueiroRadioButton.setSelected(true);
+        } else if (arqueiroRadioButton.isSelected()) {
+            cavaleiroRadioButton.setSelected(true);
         } else {
-            System.out.println("Este personagem não possui montaria.");
+            todosRadioButton.setSelected(true);
+        }
+    }
+
+    private void alternarMontaria() {
+        Class<?> tipo = getTipoSelecionado();
+
+        if (tipo == null) {
+            getTela().alternarMontariaTodos();
+        } else {
+            getTela().alternarMontariaPorTipo(tipo);
         }
     }
 
@@ -95,17 +138,12 @@ public class PainelControles {
     }
 
     private void atacarFiltrado() {
-        Personagem personagem = getPersonagemSelecionado();
+        Class<?> tipo = getTipoSelecionado();
 
-        // É importante verificar se 'personagem' é null (se nada estiver selecionado)
-        if (personagem instanceof Guerreiro) {
-
-            // Polimorfismo: chama o atacar() correto para Arqueiro ou Cavaleiro
-            ((Guerreiro) personagem).atacar();
-
+        if (tipo == null) {
+            getTela().atacarTodos();
         } else {
-            // Feedback para o usuário: nada selecionado ou o alvo (ex: Aldeao) não pode atacar
-            System.out.println("Ação inválida: Nenhum atacante válido selecionado.");
+            getTela().atacarPersonagem(tipo);
         }
     }
 
@@ -161,6 +199,5 @@ public class PainelControles {
 
     private void createUIComponents() {
         this.painelTela = new Tela();
-        configurarListeners();
     }
 }
