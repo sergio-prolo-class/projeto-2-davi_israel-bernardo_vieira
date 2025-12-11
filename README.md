@@ -5,7 +5,7 @@ ________________________________________________________________________________
 
 OBRIGATÓRIO:
 Coletador precisa ser implementado;
-Corrigir fundo dos PNGs
+Corrigir fundo dos PNGs ( TODOS )
 
 __________________________________________________________________________________________
 
@@ -40,12 +40,6 @@ Melhoria da posição para montar e desmontar
 
 __________________________________________________________________________________________
 INTERFACE DO USUÁRIO:
-
-BARRA DE VIDA:
-Desenha retângulo com vida sendo, proporcional a vida máxima
-Muda de cor conforme perde vida
-Deve ser visivel mas discreta
-Atualiza automaticamente quando muda
 
 EFEITO SONORO:
 Tudo
