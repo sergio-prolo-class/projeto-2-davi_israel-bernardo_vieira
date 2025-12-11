@@ -31,6 +31,7 @@ public class Cavaleiro extends Personagem implements Guerreiro, ComMontaria {
         this.icone = carregarImagem(nomeImagemFinal);
 
         g.drawImage(this.icone, this.posX, this.posY, painel);
+        desenharVida(g);
     }
 
     @Override
