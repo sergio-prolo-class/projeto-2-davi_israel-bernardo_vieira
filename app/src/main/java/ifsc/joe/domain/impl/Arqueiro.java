@@ -22,6 +22,7 @@ public class Arqueiro extends Personagem implements Guerreiro {
         this.icone = this.carregarImagem(NOME_IMAGEM + (atacando ? "2" : ""));
         // desenhando de fato a imagem no pai
         g.drawImage(this.icone, this.posX, this.posY, painel);
+        desenharVida(g);
     }
 
     // Método para atacar
