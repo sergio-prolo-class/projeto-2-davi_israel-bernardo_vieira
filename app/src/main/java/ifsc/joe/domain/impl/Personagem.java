@@ -1,92 +1,91 @@
 package ifsc.joe.domain.impl;
 
-import java.awt.Image;
+import java.awt.*;
 import ifsc.joe.enums.Direcao;
-import java.awt.Graphics;
 import javax.swing.*;
 
 public abstract class Personagem {
-  protected int posX, posY;
-  protected boolean atacando;
-  protected Image icone;
-  protected int vida; // Novo
-  protected int ataque; // Novo
-  protected int defesa; // Novo
 
-  public Personagem(int x, int y, boolean atacando, Image icone, int vida, int ataque, int defesa) {
-    this.posX = x;
-    this.posY = y;
-    this.atacando = atacando;
-    this.icone = icone;
-    this.vida = vida;
-    this.ataque = ataque;
-    this.defesa = defesa;
-  }
+    protected int posX, posY;
+    protected boolean atacando;
+    protected Image icone;
+    protected int vida;
+    protected int vidaMax;    // ADICIONADO
+    protected int ataque;
+    protected int defesa;
 
-  public abstract void desenhar(Graphics g, JPanel painel);
-
-  public void sofrerDano(int dano) {
-      int danoReal = Math.max(0, dano - this.defesa);
-      this.vida -= danoReal;
-      if (this.vida < 0) {
-          this.vida = 0;
-      }
-      System.out.println(this.getClass().getSimpleName() + " sofreu " + danoReal + " de dano. Vida restante: " + this.vida);
-  }
-
-  public boolean estaVivo() {
-      return this.vida > 0;
-  }
-
-  public int getAtaque() {
-      return ataque;
-  }
-
-  public int getPosX() {
-      return posX;
-  }
-
-  public int getPosY() {
-      return posY;
-  }
-
-  //Método para detectar que o personagem foi clicado e vai atacar:
-  public boolean foiClicado(int mouseX, int mouseY) {
-      int largura = 50;
-      int altura  = 50;
-
-      // Se o ícone existe, usa o tamanho real
-      if (icone != null) {
-          largura = icone.getWidth(null);
-          altura  = icone.getHeight(null);
-      }
-
-      return mouseX >= posX && mouseX <= posX + largura &&
-              mouseY >= posY && mouseY <= posY + altura;
-  }
-
-
-    /**
-   * Atualiza as coordenadas X e Y do personagem
-   *
-   * @param direcao indica a direcao a ir.
-   */
-  public void mover(Direcao direcao, int maxLargura, int maxAltura) {
-    switch (direcao) {
-      case CIMA -> this.posY -= 10;
-      case BAIXO -> this.posY += 10;
-      case ESQUERDA -> this.posX -= 10;
-      case DIREITA -> this.posX += 10;
+    public Personagem(int x, int y, boolean atacando, Image icone, int vida, int ataque, int defesa) {
+        this.posX = x;
+        this.posY = y;
+        this.atacando = atacando;
+        this.icone = icone;
+        this.vida = vida;
+        this.vidaMax = vida; // vida máxima = valor inicial
+        this.ataque = ataque;
+        this.defesa = defesa;
     }
 
-    // Essas linhas estão dizendo que caso o ícone não seja nulo
-    // ele vai pegar as dimensões reais; caso seja nulo, usa 50 como padrão
+    // Cada personagem filho deve chamar desenharVida()
+    public abstract void desenhar(Graphics g, JPanel painel);
 
-    int larguraicone = (icone != null) ? icone.getWidth(null) : 50;
-    int alturaicone = (icone != null) ? icone.getHeight(null) : 50;
+    protected void desenharVida(Graphics g) {
 
-    // Não deixa a imagem ser desenhada fora dos limites do JPanel pai
-    this.posX = Math.min(Math.max(0, this.posX), maxLargura - this.icone.getWidth(null));
-    this.posY = Math.min(Math.max(0, this.posY), maxAltura - this.icone.getHeight(null));
-  }
+        int porcentagem = (vida * 100) / vidaMax;
+
+        String arquivoVida;
+        if (porcentagem >= 95) arquivoVida = "Vida_Cheia.png";
+        else if (porcentagem >= 75) arquivoVida = "Vida_75.png";
+        else if (porcentagem >= 50) arquivoVida = "Vida_50.png";
+        else if (porcentagem >= 25) arquivoVida = "Vida_25.png";
+        else if (porcentagem >= 5) arquivoVida = "Vida_5.png";
+        else arquivoVida = "Vida_0.png";
+
+        try {
+            Image barra = Toolkit.getDefaultToolkit().getImage(
+                    getClass().getResource("/" + arquivoVida)
+            );
+
+            g.drawImage(barra, posX, posY - 12, 40, 20, null);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sofrerDano(int dano) {
+        int danoReal = Math.max(0, dano - this.defesa);
+        this.vida -= danoReal;
+        if (this.vida < 0) this.vida = 0;
+    }
+
+    public boolean estaVivo() {
+        return vida > 0;
+    }
+
+    public int getAtaque() { return ataque; }
+    public int getPosX() { return posX; }
+    public int getPosY() { return posY; }
+
+    public boolean foiClicado(int mouseX, int mouseY) {
+        int largura = (icone != null) ? icone.getWidth(null) : 50;
+        int altura  = (icone != null) ? icone.getHeight(null) : 50;
+
+        return mouseX >= posX && mouseX <= posX + largura &&
+                mouseY >= posY && mouseY <= posY + altura;
+    }
+
+    public void mover(Direcao direcao, int maxLargura, int maxAltura) {
+        switch (direcao) {
+            case CIMA -> posY -= 10;
+            case BAIXO -> posY += 10;
+            case ESQUERDA -> posX -= 10;
+            case DIREITA -> posX += 10;
+        }
+
+        int larguraIcone = (icone != null) ? icone.getWidth(null) : 50;
+        int alturaIcone  = (icone != null) ? icone.getHeight(null) : 50;
+
+        posX = Math.min(Math.max(0, posX), maxLargura - larguraIcone);
+        posY = Math.min(Math.max(0, posY), maxAltura - alturaIcone);
+    }
 }
