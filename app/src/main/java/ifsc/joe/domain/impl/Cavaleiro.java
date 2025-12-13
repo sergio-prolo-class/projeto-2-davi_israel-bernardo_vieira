@@ -3,7 +3,7 @@ package ifsc.joe.domain.impl;
 import ifsc.joe.Interfaces.ComMontaria;
 import ifsc.joe.Interfaces.Guerreiro;
 import ifsc.joe.enums.Direcao;
-
+import ifsc.joe.ui.Tela;
 import java.util.List;
 import javax.swing.*;
 import java.awt.*;
@@ -13,15 +13,22 @@ public class Cavaleiro extends Personagem implements Guerreiro, ComMontaria {
 
     public static final String IMG_MONTADO = "Cavaleiro";
     public static final String IMG_DESMONTADO = "CavaleiroDesmontado";
+    public static final int RAIO_ATAQUE = 50;
 
     private boolean montado = true;
 
     public Cavaleiro(int x, int y) {
-        super(x, y, false, null, 120, 30, 10);
+        super(x, y, false, null, 120, 30, 10,RAIO_ATAQUE );
     }
 
     @Override
     public void desenhar(Graphics g, JPanel painel) {
+
+        // CORREÇÃO: Usa 'instanceof' para checar e converter com segurança,
+        // resolvendo os erros 'Cannot resolve symbol Tela' e 'getPersonagemAtivo()'
+        if (painel instanceof Tela tela && tela.getPersonagemAtivo() == this) {
+            desenharAuraAtaque(g);
+        }
 
         String nomeImagemBase = montado ? IMG_MONTADO : IMG_DESMONTADO;
 
@@ -33,7 +40,6 @@ public class Cavaleiro extends Personagem implements Guerreiro, ComMontaria {
         g.drawImage(this.icone, this.posX, this.posY, painel);
         desenharVida(g);
     }
-
     @Override
     public void alternarMontado() {
         montado = !montado;
@@ -66,7 +72,7 @@ public class Cavaleiro extends Personagem implements Guerreiro, ComMontaria {
 
     @Override
     public void atacarTodosProximos(List<Personagem> alvos) {
-        final int RAIO_ATAQUE = 50;
+
         this.atacando = true;
 
         alvos.stream()

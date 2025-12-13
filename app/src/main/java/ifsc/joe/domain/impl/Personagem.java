@@ -13,8 +13,9 @@ public abstract class Personagem {
     protected int vidaMax;    // ADICIONADO
     protected int ataque;
     protected int defesa;
+    protected int alcance;
 
-    public Personagem(int x, int y, boolean atacando, Image icone, int vida, int ataque, int defesa) {
+    public Personagem(int x, int y, boolean atacando, Image icone, int vida, int ataque, int defesa, int alcance) {
         this.posX = x;
         this.posY = y;
         this.atacando = atacando;
@@ -23,10 +24,49 @@ public abstract class Personagem {
         this.vidaMax = vida; // vida máxima = valor inicial
         this.ataque = ataque;
         this.defesa = defesa;
+        this.alcance = alcance;
     }
 
     // Cada personagem filho deve chamar desenharVida()
     public abstract void desenhar(Graphics g, JPanel painel);
+
+    protected void desenharAuraAtaque(Graphics g) {
+        if (alcance <= 0) return; // Não desenha se não houver alcance
+
+        // Salva as configurações de cor e traço atuais
+        Graphics2D g2d = (Graphics2D) g;
+        Color corOriginal = g2d.getColor();
+        Stroke tracoOriginal = g2d.getStroke();
+
+        // 1. Configurações para o preenchimento (círculo semi-transparente)
+        // Cor azul clara e semi-transparente (Alpha = 50 de 255)
+        g2d.setColor(new Color(0, 150, 255, 50));
+
+        // Define as coordenadas para desenhar o círculo
+        int diametro = alcance * 2;
+        // Posição ajustada: (X - Raio + Largura/2) e (Y - Raio + Altura/2)
+        int larguraIcone = (icone != null) ? icone.getWidth(null) : 50;
+        int alturaIcone  = (icone != null) ? icone.getHeight(null) : 50;
+
+        int auraX = posX - alcance + larguraIcone / 2;
+        int auraY = posY - alcance + alturaIcone / 2;
+
+        g2d.fillOval(auraX, auraY, diametro, diametro);
+
+        // 2. Configurações para a borda (círculo pontilhado)
+        // Cor azul sólida
+        g2d.setColor(new Color(0, 150, 255, 200));
+
+        // Configura um traço tracejado
+        float[] tracoPontilhado = {5.0f, 5.0f};
+        g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, tracoPontilhado, 0.0f));
+
+        g2d.drawOval(auraX, auraY, diametro, diametro);
+
+        // Restaura as configurações originais
+        g2d.setColor(corOriginal);
+        g2d.setStroke(tracoOriginal);
+    }
 
     protected void desenharVida(Graphics g) {
 

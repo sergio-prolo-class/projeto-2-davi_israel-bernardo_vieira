@@ -84,18 +84,18 @@ public class PainelControles {
         // A Tela já tem KeyBindings para movimento, ataque e montaria.
         // Aqui vamos adicionar a criação de personagens e a troca de filtro.
 
-        // Criação de Personagens (1, 2, 3)
-        getTela().bind("1", "criaAldeao", () -> {
+        // Criação de Personagens (1, 2, 3) - CORRIGIDO para usar o teclado numérico
+        getTela().bind("NUMPAD1", "criaAldeao", () -> {
             int[] pos = gerarPosicaoAleatoria();
             getTela().adicionarPersonagem(new Aldeao(pos[0], pos[1]));
         });
 
-        getTela().bind("2", "criaArqueiro", () -> {
+        getTela().bind("NUMPAD2", "criaArqueiro", () -> {
             int[] pos = gerarPosicaoAleatoria();
             getTela().adicionarPersonagem(new Arqueiro(pos[0], pos[1]));
         });
 
-        getTela().bind("3", "criaCavaleiro", () -> {
+        getTela().bind("NUMPAD3", "criaCavaleiro", () -> {
             int[] pos = gerarPosicaoAleatoria();
             getTela().adicionarPersonagem(new Cavaleiro(pos[0], pos[1]));
         });

@@ -6,12 +6,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
-public class Aldeao extends Personagem implements Coletador {
+public class    Aldeao extends Personagem implements Coletador {
     public static final String NOME_IMAGEM = "aldeao";
 
     public Aldeao(int x, int y) {
         // vida, ataque, defesa
-        super(x, y, false, null, 100, 0, 5);
+        super(x, y, false, null, 100, 0, 5, 0);
     }
 
     @Override
