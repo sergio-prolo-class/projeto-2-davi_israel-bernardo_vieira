@@ -3,10 +3,6 @@
 O QUE PRECISA SER IMPLEMENTADO:
 __________________________________________________________________________________________
 
-OBRIGATÓRIO:
-Corrigir fundo dos PNGs ( TODOS )
-
-__________________________________________________________________________________________
 
 SISTEMA DE COMBATE:
 
@@ -17,9 +13,6 @@ SISTEMA DE MORTE:
 Desaparecimento ( fade out )
 Contador de baixas
 Limpar referências ao ser eliminado
-
-ALCANCE VARIÁVEL:
-Indicação visual dá área
 
 __________________________________________________________________________________________
 

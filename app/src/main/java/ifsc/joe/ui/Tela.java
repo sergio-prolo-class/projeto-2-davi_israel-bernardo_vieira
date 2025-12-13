@@ -18,7 +18,7 @@ public class Tela extends JPanel {
 
     private final Set<Personagem> personagens;
     private Personagem personagemAtivo;
-
+    private final Map<Class<? extends Personagem>, Integer> contadorBaixas;
     // Botão visual para alternar montaria
     private final JButton montariaButton;
 
@@ -26,6 +26,7 @@ public class Tela extends JPanel {
 
         this.setBackground(Color.white);
         this.personagens = new HashSet<>();
+        this.contadorBaixas = new HashMap<>();
 
         // Colocamos layout nulo para posicionar facilmente o botão de controle.
         // Se você preferir outro layout (BorderLayout etc.) pode adaptar.
@@ -223,7 +224,7 @@ public class Tela extends JPanel {
                 .filter(p -> p instanceof Guerreiro)
                 .forEach(p -> ((Guerreiro) p).atacarTodosProximos(getPersonagens()));
 
-        personagens.removeIf(p -> !p.estaVivo());
+        contarBaixas();
         repaint();
     }
 
@@ -233,7 +234,7 @@ public class Tela extends JPanel {
                 .filter(p -> p instanceof Guerreiro)
                 .forEach(p -> ((Guerreiro) p).atacarTodosProximos(getPersonagens()));
 
-        personagens.removeIf(p -> !p.estaVivo());
+        contarBaixas();
         repaint();
     }
 
@@ -289,6 +290,50 @@ public class Tela extends JPanel {
             montariaButton.setText("🏇 Não possui montaria");
         }
     }
+    // ...
+// MÉTODOS DE CONTROLE DE BAIXAS
+
+    /**
+     * Verifica e conta os personagens mortos antes de removê-los.
+     */
+    private void contarBaixas() {
+        // Lista temporária para coletar os mortos
+        List<Personagem> mortos = personagens.stream()
+                .filter(p -> !p.estaVivo())
+                .toList();
+
+        // 1. Contabiliza cada personagem morto
+        for (Personagem morto : mortos) {
+            Class<? extends Personagem> tipo = morto.getClass();
+            contadorBaixas.put(tipo, contadorBaixas.getOrDefault(tipo, 0) + 1);
+        }
+
+        // 2. Remove os personagens mortos do jogo
+        personagens.removeAll(mortos);
+
+        // 3. Deseleciona o personagem ativo se ele morreu
+        if (!personagens.contains(personagemAtivo)) {
+            personagemAtivo = null;
+            atualizarBotaoMontaria();
+        }
+
+        // 4. Exibe o resultado no console para feedback
+        exibirContadorBaixas();
+    }
+
+    private void exibirContadorBaixas() {
+        System.out.println("\n--- BAIXAS TOTAIS ---");
+        if (contadorBaixas.isEmpty()) {
+            System.out.println("Nenhuma baixa registrada.");
+        } else {
+            contadorBaixas.forEach((tipo, count) ->
+                    System.out.println(tipo.getSimpleName() + ": " + count)
+            );
+        }
+        System.out.println("---------------------\n");
+    }
+
+// ...
 
     /**
      * Exposição pública do botão caso você queira reposicioná-lo em outro
