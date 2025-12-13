@@ -12,6 +12,8 @@ import java.util.Objects;
 public class Arqueiro extends Personagem implements Guerreiro {
     public static final String NOME_IMAGEM = "Arqueiro";
     public static final int RAIO_ATAQUE = 100;
+    private float alpha = 1.0f;
+    private Timer fadeTimer;
 
     public Arqueiro(int x, int y) {
         // vida, ataque, defesa
@@ -21,18 +23,30 @@ public class Arqueiro extends Personagem implements Guerreiro {
     // Desenha o Arqueiro
     @Override
     public void desenhar(Graphics g, JPanel painel) {
-        // Adiciona a lógica para desenhar a aura se o personagem estiver selecionado
-        Tela tela = (Tela) painel;
-        if (tela.getPersonagemAtivo() == this) {
-            desenharAuraAtaque(g); // NOVO
+
+        if (painel instanceof Tela tela && tela.getPersonagemAtivo() == this) {
+            desenharAuraAtaque(g);
         }
 
-        // verificando qual imagem carregar
-        this.icone = this.carregarImagem(NOME_IMAGEM + (atacando ? "2" : ""));
-        // desenhando de fato a imagem no pai
-        g.drawImage(this.icone, this.posX, this.posY, painel);
+        this.icone = carregarImagem(NOME_IMAGEM + (atacando ? "2" : ""));
+
+        Graphics2D g2 = (Graphics2D) g;
+        Composite original = g2.getComposite();
+
+        g2.setComposite(
+                AlphaComposite.getInstance(
+                        AlphaComposite.SRC_OVER,
+                        alpha
+                )
+        );
+
+        g2.drawImage(this.icone, posX, posY, painel);
+
+        g2.setComposite(original);
+
         desenharVida(g);
     }
+
     // Método para atacar
     @Override
     public void atacar() {
@@ -74,5 +88,24 @@ public class Arqueiro extends Personagem implements Guerreiro {
     private Image carregarImagem(String imagem) {
         return new ImageIcon(Objects.requireNonNull(
                 getClass().getClassLoader().getResource("./" + imagem + ".png"))).getImage();
+    }
+    private void iniciarFadeOut() {
+
+        if (fadeTimer != null && fadeTimer.isRunning()) {
+            fadeTimer.stop();
+        }
+
+        alpha = 1.0f;
+
+        fadeTimer = new Timer(60, e -> {   // intervalo MAIOR
+            alpha -= 0.04f;                // decremento MENOR
+
+            if (alpha <= 0f) {
+                alpha = 1.0f;
+                fadeTimer.stop();
+            }
+        });
+
+        fadeTimer.start();
     }
 }

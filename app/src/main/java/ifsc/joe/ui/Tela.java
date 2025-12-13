@@ -6,6 +6,7 @@ import ifsc.joe.domain.impl.Personagem;
 import ifsc.joe.enums.Direcao;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Toolkit;
@@ -19,6 +20,7 @@ public class Tela extends JPanel {
     private final Set<Personagem> personagens;
     private Personagem personagemAtivo;
     private final Map<Class<? extends Personagem>, Integer> contadorBaixas;
+
     // Botão visual para alternar montaria
     private final JButton montariaButton;
 
@@ -60,6 +62,8 @@ public class Tela extends JPanel {
             }
         });
 
+        new Timer(16, e -> atualizarFade()).start();
+
         // Ao clicar no painel, pede foco para receber teclas
         addMouseListener(new MouseAdapter() {
             @Override
@@ -67,6 +71,18 @@ public class Tela extends JPanel {
                 requestFocusInWindow();
             }
         });
+    }
+
+    // Criando o método da animação fade out
+    private void atualizarFade() {
+
+        // Atualiza a transparência de quem está morrendo
+        personagens.forEach(Personagem::atualizarFade);
+
+        // Remove só depois que o fade terminou
+        personagens.removeIf(Personagem::podeRemover);
+
+        repaint();
     }
 
     // =============================
@@ -89,12 +105,23 @@ public class Tela extends JPanel {
         bind("LEFT", "moverEsq2", () -> moverSelecionado(Direcao.ESQUERDA));
         bind("RIGHT", "moverDir2", () -> moverSelecionado(Direcao.DIREITA));
 
-        // Atacar (barra de espaço)
+        // Atacar (barra de espaço) FINALMENTE CORRIGIDO AMÉM
         bind("SPACE", "atacar", () -> {
-            if (personagemAtivo instanceof Guerreiro g) {
-                g.atacar();
-                System.out.println("[Atacar] " + personagemAtivo.getClass().getSimpleName());
-            }
+
+            if (!(personagemAtivo instanceof Guerreiro g))
+                return;
+
+            // 1. Animação
+            g.atacar();
+
+            // 2. Dano REAL
+            g.atacarTodosProximos(getPersonagens());
+
+            // 3. Contabiliza mortes
+            contarBaixas();
+
+            System.out.println("[Atacar] " + personagemAtivo.getClass().getSimpleName());
+
             repaint();
         });
 
@@ -257,7 +284,7 @@ public class Tela extends JPanel {
     // BOTÃO DE MONTARIA (UI)
     // =============================
     private JButton criarBotaoMontaria() {
-        JButton btn = new JButton("🏇 Montar/Desmontar");
+        JButton btn = new JButton("Montar/Desmontar");
         btn.setFocusable(false); // importante: não roubar foco do painel
         btn.addActionListener(e -> {
             // se existir personagem ativo com montaria, alterna
@@ -279,19 +306,19 @@ public class Tela extends JPanel {
      */
     private void atualizarBotaoMontaria() {
         if (personagemAtivo == null) {
-            montariaButton.setText("🏇 Montar/Desmontar (nenhum)");
+            montariaButton.setText("Montar/Desmontar (nenhum)");
             montariaButton.setEnabled(false);
         } else if (personagemAtivo instanceof ComMontaria cm) {
             montariaButton.setEnabled(true);
             String estado = cm.isMontado() ? "Montado" : "Desmontado";
-            montariaButton.setText("🏇 " + estado + " (M para alternar)");
+            montariaButton.setText(estado + " (M para alternar)");
         } else {
             montariaButton.setEnabled(false);
-            montariaButton.setText("🏇 Não possui montaria");
+            montariaButton.setText("Não possui montaria");
         }
     }
     // ...
-// MÉTODOS DE CONTROLE DE BAIXAS
+    // MÉTODOS DE CONTROLE DE BAIXAS
 
     /**
      * Verifica e conta os personagens mortos antes de removê-los.
@@ -326,14 +353,12 @@ public class Tela extends JPanel {
         if (contadorBaixas.isEmpty()) {
             System.out.println("Nenhuma baixa registrada.");
         } else {
-            contadorBaixas.forEach((tipo, count) ->
-                    System.out.println(tipo.getSimpleName() + ": " + count)
-            );
+            contadorBaixas.forEach((tipo, count) -> System.out.println(tipo.getSimpleName() + ": " + count));
         }
         System.out.println("---------------------\n");
     }
 
-// ...
+    // ...
 
     /**
      * Exposição pública do botão caso você queira reposicioná-lo em outro

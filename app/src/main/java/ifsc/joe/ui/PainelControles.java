@@ -1,7 +1,5 @@
 package ifsc.joe.ui;
 
-import ifsc.joe.Interfaces.ComMontaria;
-import ifsc.joe.Interfaces.Guerreiro;
 import ifsc.joe.utils.AudioPlayer;
 import ifsc.joe.domain.impl.Aldeao;
 import ifsc.joe.domain.impl.Arqueiro;
@@ -24,7 +22,6 @@ public class PainelControles {
     private JButton bCriaAldeao;
     private JButton bCriaArqueiro;
     private JButton bCriaCavaleiro;
-    private JButton bMontar;
     private JRadioButton todosRadioButton;
     private JRadioButton aldeaoRadioButton;
     private JRadioButton arqueiroRadioButton;
@@ -35,6 +32,7 @@ public class PainelControles {
     private JButton buttonBaixo;
     private JButton buttonDireita;
     private JLabel logo;
+    private JButton montarDesmontarButton;
 
     public PainelControles() {
         this.sorteio = new Random();
@@ -76,7 +74,7 @@ public class PainelControles {
     // ------------------------ MONTARIA -------------------------
 
     private void configurarBotaoMontaria() {
-        bMontar.addActionListener(e -> alternarMontaria());
+        montarDesmontarButton.addActionListener(e -> alternarMontaria());
     }
 
     // ------------------------ CONTROLES POR TECLADO -------------------------
@@ -85,7 +83,7 @@ public class PainelControles {
         // A Tela já tem KeyBindings para movimento, ataque e montaria.
         // Aqui vamos adicionar a criação de personagens e a troca de filtro.
 
-        // Criação de Personagens (1, 2, 3) - CORRIGIDO para usar o teclado numérico
+        // Criação de Personagens (1, 2, 3) - para usar o teclado numérico
         getTela().bind("NUMPAD1", "criaAldeao", () -> {
             int[] pos = gerarPosicaoAleatoria();
             getTela().adicionarPersonagem(new Aldeao(pos[0], pos[1]));

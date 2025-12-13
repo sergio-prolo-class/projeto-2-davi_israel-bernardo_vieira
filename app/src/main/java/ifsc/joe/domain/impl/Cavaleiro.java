@@ -4,10 +4,11 @@ import ifsc.joe.Interfaces.ComMontaria;
 import ifsc.joe.Interfaces.Guerreiro;
 import ifsc.joe.enums.Direcao;
 import ifsc.joe.ui.Tela;
-import java.util.List;
 import ifsc.joe.utils.AudioPlayer;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 import java.util.Objects;
 
 public class Cavaleiro extends Personagem implements Guerreiro, ComMontaria {
@@ -15,32 +16,48 @@ public class Cavaleiro extends Personagem implements Guerreiro, ComMontaria {
     public static final String IMG_MONTADO = "Cavaleiro";
     public static final String IMG_DESMONTADO = "CavaleiroDesmontado";
     public static final int RAIO_ATAQUE = 50;
+    private float alpha = 1.0f;
+    private Timer fadeTimer;
 
     private boolean montado = true;
 
     public Cavaleiro(int x, int y) {
-        super(x, y, false, null, 120, 30, 10,RAIO_ATAQUE );
+        super(x, y, false, null, 120, 30, 10, RAIO_ATAQUE);
     }
 
+    // =========================
+    // DESENHO
+    // =========================
     @Override
     public void desenhar(Graphics g, JPanel painel) {
 
-        // CORREÇÃO: Usa 'instanceof' para checar e converter com segurança,
-        // resolvendo os erros 'Cannot resolve symbol Tela' e 'getPersonagemAtivo()'
+        // Desenha aura apenas se estiver selecionado
         if (painel instanceof Tela tela && tela.getPersonagemAtivo() == this) {
             desenharAuraAtaque(g);
         }
 
-        String nomeImagemBase = montado ? IMG_MONTADO : IMG_DESMONTADO;
+        String imagemBase = montado ? IMG_MONTADO : IMG_DESMONTADO;
+        String imagemFinal = imagemBase + (atacando ? "2" : "");
 
-        // Se estiver atacando, carrega a versão 2
-        String nomeImagemFinal = nomeImagemBase + (atacando ? "2" : "");
+        this.icone = carregarImagem(imagemFinal);
 
-        this.icone = carregarImagem(nomeImagemFinal);
+        // ===== AQUI É O FADE OUT =====
+        Graphics2D g2 = (Graphics2D) g;
+        Composite original = g2.getComposite();
 
-        g.drawImage(this.icone, this.posX, this.posY, painel);
+        g2.setComposite(
+                AlphaComposite.getInstance(
+                        AlphaComposite.SRC_OVER,
+                        alpha));
+
+        g.drawImage(this.icone, posX, posY, painel);
+        g2.setComposite(original);
         desenharVida(g);
     }
+
+    // =========================
+    // MONTARIA
+    // =========================
     @Override
     public void alternarMontado() {
         montado = !montado;
@@ -51,14 +68,17 @@ public class Cavaleiro extends Personagem implements Guerreiro, ComMontaria {
         return montado;
     }
 
+    // =========================
+    // MOVIMENTO
+    // =========================
     @Override
     public void mover(Direcao dir, int w, int h) {
         int velocidade = montado ? 20 : 10;
 
         switch (dir) {
-            case CIMA    -> posY -= velocidade;
-            case BAIXO   -> posY += velocidade;
-            case ESQUERDA-> posX -= velocidade;
+            case CIMA -> posY -= velocidade;
+            case BAIXO -> posY += velocidade;
+            case ESQUERDA -> posX -= velocidade;
             case DIREITA -> posX += velocidade;
         }
 
@@ -66,37 +86,77 @@ public class Cavaleiro extends Personagem implements Guerreiro, ComMontaria {
         posY = Math.max(0, Math.min(h - 50, posY));
     }
 
+    // =========================
+    // ATAQUE (FUNCIONA MONTADO E DESMONTADO)
+    // =========================
     @Override
     public void atacar() {
-        this.atacando = !this.atacando;
+        iniciarAnimacaoAtaque();
     }
 
     @Override
     public void atacarTodosProximos(List<Personagem> alvos) {
-        AudioPlayer.playSound("som_ataque_espada.wav"); // NOVO
+        AudioPlayer.playSound("som_ataque_espada.wav");
+
         this.atacando = true;
 
         alvos.stream()
                 .filter(alvo -> alvo != this)
                 .filter(alvo -> calcularDistancia(alvo) <= RAIO_ATAQUE)
-                .forEach(alvo -> alvo.sofrerDano(this.getAtaque()));
+                .forEach(alvo -> alvo.sofrerDano(getAtaque()));
 
         new Thread(() -> {
             try {
                 Thread.sleep(500);
-                this.atacando = false;
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
+            atacando = false;
+        }).start();
+    }
+
+    // =========================
+    // MÉTODOS AUXILIARES
+    // =========================
+    private void iniciarAnimacaoAtaque() {
+        this.atacando = true;
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ignored) {
+            }
+            this.atacando = false;
         }).start();
     }
 
     private double calcularDistancia(Personagem outro) {
-        return Math.sqrt(Math.pow(this.posX - outro.getPosX(), 2) +
-                Math.pow(this.posY - outro.getPosY(), 2));
+        return Math.sqrt(
+                Math.pow(posX - outro.getPosX(), 2) +
+                        Math.pow(posY - outro.getPosY(), 2));
     }
 
     private Image carregarImagem(String nome) {
         return new ImageIcon(Objects.requireNonNull(
-                getClass().getClassLoader().getResource("./" + nome + ".png")
-        )).getImage();
+                getClass().getClassLoader().getResource(nome + ".png"))).getImage();
+    }
+
+    private void iniciarFadeOut() {
+
+        if (fadeTimer != null && fadeTimer.isRunning()) {
+            fadeTimer.stop();
+        }
+
+        alpha = 1.0f;
+
+        fadeTimer = new Timer(60, e -> { // intervalo MAIOR
+            alpha -= 0.04f; // decremento MENOR
+
+            if (alpha <= 0f) {
+                alpha = 1.0f;
+                fadeTimer.stop();
+            }
+        });
+
+        fadeTimer.start();
     }
 }
