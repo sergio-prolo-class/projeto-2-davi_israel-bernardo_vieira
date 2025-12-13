@@ -11,7 +11,7 @@ Efeito visual quando ataca precisa ser melhorado
 
 SISTEMA DE MORTE:
 Desaparecimento ( fade out )
-Contador de baixas
+
 Limpar referências ao ser eliminado
 
 __________________________________________________________________________________________

@@ -2,6 +2,7 @@ package ifsc.joe.ui;
 
 import ifsc.joe.Interfaces.ComMontaria;
 import ifsc.joe.Interfaces.Guerreiro;
+import ifsc.joe.utils.AudioPlayer;
 import ifsc.joe.domain.impl.Aldeao;
 import ifsc.joe.domain.impl.Arqueiro;
 import ifsc.joe.domain.impl.Cavaleiro; // quando criarmos
@@ -154,17 +155,21 @@ public class PainelControles {
         bCriaAldeao.addActionListener(e -> {
             int[] pos = gerarPosicaoAleatoria();
             getTela().adicionarPersonagem(new Aldeao(pos[0], pos[1]));
+            AudioPlayer.playSound("som_criar_aldeao.wav"); // NOVO
         });
 
         bCriaArqueiro.addActionListener(e -> {
             int[] pos = gerarPosicaoAleatoria();
             getTela().adicionarPersonagem(new Arqueiro(pos[0], pos[1]));
+            AudioPlayer.playSound("som_criar_arqueiro.wav"); // NOVO
         });
 
         bCriaCavaleiro.addActionListener(e -> {
             int[] pos = gerarPosicaoAleatoria();
             getTela().adicionarPersonagem(new Cavaleiro(pos[0], pos[1]));
+            AudioPlayer.playSound("som_criar_cavaleiro.wav"); // NOVO
         });
+
     }
 
     private int[] gerarPosicaoAleatoria() {

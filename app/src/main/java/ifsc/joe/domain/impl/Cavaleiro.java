@@ -5,6 +5,7 @@ import ifsc.joe.Interfaces.Guerreiro;
 import ifsc.joe.enums.Direcao;
 import ifsc.joe.ui.Tela;
 import java.util.List;
+import ifsc.joe.utils.AudioPlayer;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
@@ -72,7 +73,7 @@ public class Cavaleiro extends Personagem implements Guerreiro, ComMontaria {
 
     @Override
     public void atacarTodosProximos(List<Personagem> alvos) {
-
+        AudioPlayer.playSound("som_ataque_espada.wav"); // NOVO
         this.atacando = true;
 
         alvos.stream()

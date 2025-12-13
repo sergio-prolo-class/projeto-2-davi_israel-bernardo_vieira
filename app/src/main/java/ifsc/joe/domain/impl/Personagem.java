@@ -3,6 +3,7 @@ package ifsc.joe.domain.impl;
 import java.awt.*;
 import ifsc.joe.enums.Direcao;
 import javax.swing.*;
+import ifsc.joe.utils.AudioPlayer;
 
 public abstract class Personagem {
 
@@ -95,7 +96,11 @@ public abstract class Personagem {
     public void sofrerDano(int dano) {
         int danoReal = Math.max(0, dano - this.defesa);
         this.vida -= danoReal;
-        if (this.vida < 0) this.vida = 0;
+        if (danoReal > 0) {
+            this.vida -= danoReal;
+            if (this.vida < 0) this.vida = 0;
+            AudioPlayer.playSound("som_dano_morrer.wav");
+        }
     }
 
     public boolean estaVivo() {

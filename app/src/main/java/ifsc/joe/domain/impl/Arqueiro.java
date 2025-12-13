@@ -2,6 +2,7 @@ package ifsc.joe.domain.impl;
 
 import ifsc.joe.Interfaces.Guerreiro;
 import ifsc.joe.enums.Direcao;
+import ifsc.joe.utils.AudioPlayer;
 import java.util.List;
 import ifsc.joe.ui.Tela;
 import javax.swing.*;
@@ -40,7 +41,7 @@ public class Arqueiro extends Personagem implements Guerreiro {
 
     @Override
     public void atacarTodosProximos(List<Personagem> alvos) {
-
+        AudioPlayer.playSound("som_ataque_arco.wav");
         this.atacando = true; // Inicia o efeito visual de ataque
 
         alvos.stream()
