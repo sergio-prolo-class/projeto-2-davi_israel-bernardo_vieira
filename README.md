@@ -7,13 +7,11 @@ ________________________________________________________________________________
 SISTEMA DE COMBATE:
 
 ATAQUE BÁSICO:
-Efeito visual quando ataca precisa ser melhorado
+
+Efeito visual quando ataca precisa ser melhorado.
 
 SISTEMA DE MORTE:
 Desaparecimento ( fade out )
-
-Limpar referências ao ser eliminado
-
 __________________________________________________________________________________________
 
 CONTROLES AVANÇADOS:
@@ -31,7 +29,3 @@ Melhoria no WASD para aplicar ao filtro escolhido
 Melhoria da posição para montar e desmontar
 
 __________________________________________________________________________________________
-INTERFACE DO USUÁRIO:
-
-EFEITO SONORO:
-Tudo
